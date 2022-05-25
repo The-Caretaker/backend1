@@ -6,6 +6,9 @@ const UserRoute = require('./routes/user');
 const ProductRoute = require('./routes/product');
 const CompanyRoute = require('./routes/company');
 const dbConfig = require('./config/database.config.js');
+const swaggerUI = require('swagger-ui-express'),
+    swaggerDocument = require('./swagger.json');
+const swaggerUi = require("swagger-ui-express");
 const app = express();
 mongoose.createConnection("mongodb://127.0.0.1:27017/users-db");
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -30,6 +33,9 @@ mongoose.connect(dbConfig.url, {
 
 const port = 3000;
 app.use(express.static('public'))
+// app.use(passport.initialize());
+// app.use(passport.session());
+require('config/passport');
 app.set('view engine', 'ejs');
 app.get('/',((req, res) => {
     res.render('index');
@@ -46,6 +52,12 @@ app.get('/smth', ((req, res) => {
 app.get('/catalog', ((req, res) => {
     res.render('catalog')
 }))
+
+app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+);
 
 app.listen(port, () =>
     console.log(`App listening at http://localhost:${port}`)
