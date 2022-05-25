@@ -35,7 +35,7 @@ const port = 3000;
 app.use(express.static('public'))
 // app.use(passport.initialize());
 // app.use(passport.session());
-require('config/passport');
+// require('config/passport');
 app.set('view engine', 'ejs');
 app.get('/',((req, res) => {
     res.render('index');
