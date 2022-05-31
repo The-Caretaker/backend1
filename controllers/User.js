@@ -1,15 +1,27 @@
-const UserModel = require('../model/user')
+const UserModel = require('../model/user');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const {secret} = require('../config')
+const generateAccessToken = (id, roles) => {
+    const payload ={
+        id
+    }
+    return jwt.sign(payload, secret, {expiresIn: "24h"})
+}
 // Create and Save a new user
 exports.create = async (req, res) => {
-    if (!req.body.email && !req.body.firstName && !req.body.lastName && !req.body.phone) {
+    if (!req.body.email && !req.body.firstName && !req.body.lastName && !req.body.phone && !req.body.password) {
         res.status(400).send({ message: "Content can not be empty!" });
     }
 
+    const password = req.body.password;
+    const hashPassword = bcrypt.hashSync(password, 5);
     const user = new UserModel({
         email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        phone: req.body.phone
+        phone: req.body.phone,
+        password: hashPassword
     });
 
     await user.save().then(data => {
@@ -83,3 +95,25 @@ exports.destroy = async (req, res) => {
         });
     });
 };
+
+
+
+exports.login = async (req, res) => {
+    try {
+        const {email, password} = req.body
+        const user = await UserModel.findOne({email})
+        if (!user) {
+            res.status(400).json({message: "Пользователь ${email} не найден"})
+        }
+        const validPassword = bcrypt.compareSync(password, user.password)
+        if (!validPassword) {
+            res.status(400).json({message: "Введен неверный пароль"})
+        }
+        const token = generateAccessToken(user._id)
+        res.redirect('/user/' + user._id)
+        // res.json({message: 'login successful!'})
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({message: 'Login error'})
+    }
+}

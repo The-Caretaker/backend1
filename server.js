@@ -52,6 +52,9 @@ app.get('/smth', ((req, res) => {
 app.get('/catalog', ((req, res) => {
     res.render('catalog')
 }))
+app.get('/login', ((req, res)=> {
+    res.render('login')
+}))
 
 app.use(
     '/api-docs',

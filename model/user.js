@@ -14,6 +14,16 @@ const schema = new mongoose.Schema({
         default: ''
     },
     phone: String,
+    password: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    hashPassword:{
+        type: String,
+        required: false,
+        unique: true
+    }
 });
 const user = new mongoose.model('User', schema);
 module.exports = user;
