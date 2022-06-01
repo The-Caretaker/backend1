@@ -109,7 +109,6 @@ exports.login = async (req, res) => {
         if (!validPassword) {
             res.status(400).json({message: "Введен неверный пароль"})
         }
-        const token = generateAccessToken(user._id)
         res.redirect('/user/' + user._id)
         // res.json({message: 'login successful!'})
     } catch (e) {
